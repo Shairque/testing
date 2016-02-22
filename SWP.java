@@ -22,7 +22,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class SWP {
-
 	/*========================================================================*
  	The following are provided. DO NOT CHANGE!
  	*=========================================================================*/
@@ -42,22 +41,22 @@ public class SWP {
 
 	// Constructor:
  	public SWP(SWE sw, String s) {
- 		swe = sw;
- 		sid = s;
+        swe = sw;
+        sid = s;
  	}
 
 	// Protocol-Related Methods:
  	private void init() {
- 		for (int i = 0; i < NR_BUFS; i++){
- 			out_buf[i] = new Packet();
- 			in_buf[i] = new Packet();
- 		}
- 	}
+        for (int i = 0; i < NR_BUFS; i++){
+            out_buf[i] = new Packet();
+            in_buf[i] = new Packet();
+        }
+    }
 
- 	private void wait_for_event(PEvent e) {
-  		swe.wait_for_event(e); // may be blocked
-  		oldest_frame = e.seq;  // set timeout frame seq
-  	}
+    private void wait_for_event(PEvent e) {
+        swe.wait_for_event(e); // may be blocked
+        oldest_frame = e.seq;  // set timeout frame seq
+    }
 
   	private void enable_network_layer(int nr_of_bufs) {
    		// Network layer is permitted to send if credit is available.
@@ -94,13 +93,13 @@ public class SWP {
 	*==========================================================================*/
 	private boolean no_nak = true;
 
-  	// The following method checks the circular condition of the frame numbers:
+    // The following method checks the circular condition of the frame numbers:
 	public static boolean between(int x, int y, int z) {
 		return ((x <= y) && (y < z)) || ((z < x) && (x <= y)) || ((y < z) && (z < x));
 	}
 
     // The following method is used to construct and send a DATA, ACK or NAK frame:
-	private void send_frame(int frame_type, int frame_nr, int frame_expected, Packet buffer[]) {
+    private void send_frame(int frame_type, int frame_nr, int frame_expected, Packet buffer[]) {
 		PFrame s = new PFrame();  // scratch variable
 
        	s.kind = frame_type;  // there are 3 kinds of frames - DATA, ACK, NAK
@@ -160,8 +159,8 @@ public class SWP {
 
     					if ((temp_frame.seq != frame_expected) && no_nak) {
     						send_frame(PFrame.NAK, 0, frame_expected, out_buf);
-                    	} else {
-                    		start_ack_timer();
+                        } else {
+                            start_ack_timer();
                     	}
 
                     	// Check if the frame received is between the expected frames of the sliding window & if it has not
@@ -187,32 +186,32 @@ public class SWP {
                     // resend the data of the frame for which a NAK has arrived.
                     if (temp_frame.kind == PFrame.NAK && between(ack_expected, ((temp_frame.ack + 1) % (MAX_SEQ + 1)),
                         next_frame_to_send)) {
-                    	send_frame(PFrame.DATA, ((temp_frame.ack + 1) % (MAX_SEQ + 1)), frame_expected, out_buf);
+                            send_frame(PFrame.DATA, ((temp_frame.ack + 1) % (MAX_SEQ + 1)), frame_expected, out_buf);
                     }
 
                     while (between(ack_expected, temp_frame.ack, next_frame_to_send)) {
-                    	stop_timer(ack_expected % NR_BUFS);    // If a complete & undamaged frame is received,
-                    	ack_expected = inc(ack_expected);      // advance lower edge of sender's window &
-                    	enable_network_layer(1);               // free one buffer slot.
+                        stop_timer(ack_expected % NR_BUFS);    // If a complete & undamaged frame is received,
+                        ack_expected = inc(ack_expected);      // advance lower edge of sender's window &
+                        enable_network_layer(1);               // free one buffer slot.
                     }
 
     				break;
 
     			case (PEvent.CKSUM_ERR):
     				if (no_nak) {
-    					// Damaged frame has arrived.
-    					send_frame(PFrame.NAK, 0, frame_expected, out_buf);
+                        // Damaged frame has arrived.
+                        send_frame(PFrame.NAK, 0, frame_expected, out_buf);
     				}
     				break;
 
     			case (PEvent.TIMEOUT):
-    				// If the timer has expired for the frame, resend the frame.
-                	send_frame(PFrame.DATA, oldest_frame, frame_expected, out_buf);
+                    // If the timer has expired for the frame, resend the frame.
+                    send_frame(PFrame.DATA, oldest_frame, frame_expected, out_buf);
     				break;
 
     			case (PEvent.ACK_TIMEOUT):
-    				// If the ACK timer has expired, send the ACK on its own.
-                	send_frame(PFrame.ACK, 0, frame_expected, out_buf);
+                    // If the ACK timer has expired, send the ACK on its own.
+                    send_frame(PFrame.ACK, 0, frame_expected, out_buf);
     				break;
 
     			default:
@@ -222,12 +221,12 @@ public class SWP {
     	}
     }
 
- 	/*
+    /*
         Note: when start_timer() and stop_timer() are called,
         the "seq" parameter must be the sequence number, rather
         than the index of the timer array of the frame associated
         with this timer.
-   	*/
+    */
 
 	Timer frame_timer[] = new Timer[NR_BUFS];
 	Timer ack_timer;
@@ -290,7 +289,6 @@ public class SWP {
 			swe.generate_acktimeout_event();
 		}
 	}
-
 }
 
 
