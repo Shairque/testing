@@ -60,7 +60,7 @@ public class SWP {
   	}
 
   	private void enable_network_layer(int nr_of_bufs) {
-   		// network layer is permitted to send if credit is available
+   		// Network layer is permitted to send if credit is available.
   		swe.grant_credit(nr_of_bufs);
   	}
 
@@ -121,11 +121,11 @@ public class SWP {
 
     public void protocol6() {
     	init();
-    	int ack_expected;		// lower edge of sender's window
-    	int next_frame_to_send;	// upper edge of sender's window + 1
-    	int frame_expected;		// lower edge of receiver's window
-    	int too_far;			// upper edge of receiver's window + 1
-    	int index;				// index of the buffer
+    	int ack_expected;          // lower edge of sender's window
+    	int next_frame_to_send;    // upper edge of sender's window + 1
+    	int frame_expected;        // lower edge of receiver's window
+    	int too_far;               // upper edge of receiver's window + 1
+    	int index;                 // index of the buffer
 
     	boolean received[] = new boolean[NR_BUFS];  // keeps track of frames arrived
 
@@ -183,7 +183,7 @@ public class SWP {
                     	}
                     }
 
-                    // If a NAK frame arrives, check that the frame is between the expected frames of the sliding window & 
+                    // If a NAK frame arrives, check that the frame is between the expected frames of the sliding window &
                     // resend the data of the frame for which a NAK has arrived.
                     if (temp_frame.kind == PFrame.NAK && between(ack_expected, ((temp_frame.ack + 1) % (MAX_SEQ + 1)),
                         next_frame_to_send)) {
@@ -224,8 +224,8 @@ public class SWP {
 
  	/*
         Note: when start_timer() and stop_timer() are called,
-		the "seq" parameter must be the sequence number, rather
-		than the index of the timer array of the frame associated
+        the "seq" parameter must be the sequence number, rather
+        than the index of the timer array of the frame associated
         with this timer.
    	*/
 
@@ -295,12 +295,12 @@ public class SWP {
 
 
 /*
-	Note: In class SWE, the following two public methods are available:
-  	.generate_acktimeout_event() and
-   	.generate_timeout_event(seqnr).
+    Note: In class SWE, the following two public methods are available:
+    .generate_acktimeout_event() and
+    .generate_timeout_event(seqnr).
 
-   	To call these two methods (for implementing timers),
-   	the "swe" object should be referred as follows:
-	swe.generate_acktimeout_event(), or
-	swe.generate_timeout_event(seqnr).
+    To call these two methods (for implementing timers),
+    the "swe" object should be referred as follows:
+    swe.generate_acktimeout_event(), or
+    swe.generate_timeout_event(seqnr).
 */
